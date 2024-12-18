@@ -1,12 +1,8 @@
-import { IsString, IsNotEmpty } from "class-validator";
+import { z } from "zod";
 
-export class SignInDto {
-    @IsString()
-    @IsNotEmpty()
-    username_or_email: string;
+export const SignInSchemaAdmin = z.object({
+    username : z.string().nonempty('username is required'),
+    password : z.string().nonempty('password is required'),
+})
 
-    @IsString()
-    @IsNotEmpty()
-    password: string;
-}
-
+export type signInAdmin = z.infer<typeof SignInSchemaAdmin>

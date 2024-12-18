@@ -2,6 +2,9 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/user/sign_in.dto';
 import { SignUpDto } from './dto/user/sign_up.dto';
+import { SignUpAdminSchema, signUpAdmin } from './dto/admin/sign_up.dto';
+import { ZodPipe } from 'src/common/pipes/zod.pipe';
+import { signInAdmin, SignInSchemaAdmin } from './dto/admin/sign_in.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -34,7 +37,7 @@ export class AuthController {
      * @returns 
      */
     @Post('/admin/sign_in')
-    async signInAdmin(@Body() signInData : SignInDto) {
+    async signInAdmin(@Body(new ZodPipe(SignInSchemaAdmin)) signInData : signInAdmin) {
        return this.authService.handleSignInAdmin(signInData)
     }
 
@@ -45,7 +48,7 @@ export class AuthController {
      * @returns 
      */
     @Post('/admin/sign_up')
-    async signUpAdmin(@Body() signUpData : SignUpDto) {
+    async signUpAdmin(@Body(new ZodPipe(SignUpAdminSchema)) signUpData : signUpAdmin) {
         return await this.authService.handleSignUpAdmin(signUpData);
     }
 }

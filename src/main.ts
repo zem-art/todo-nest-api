@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 // import { ExpressAdapter } from '@nestjs/platform-express';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // // Server Express
@@ -19,6 +20,8 @@ async function bootstrap() {
   const configServiceF = appFastify.get(ConfigService);
   const hostFastify = configServiceF.get<string>('appFastify.host');
   const portFastify = configServiceF.get<number>('appFastify.port');
+
+  appFastify.useGlobalPipes(new ValidationPipe())
 
   await appFastify.listen(portFastify, hostFastify);
   console.log(`Fastify Server is running on http://${hostFastify}:${portFastify}`);

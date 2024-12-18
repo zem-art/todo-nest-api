@@ -1,6 +1,8 @@
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SignInDto } from './dto/user/sign_in.dto';
 import { SignUpDto } from './dto/user/sign_up.dto';
+import { signUpAdmin } from './dto/admin/sign_up.dto';
+import { signInAdmin } from './dto/admin/sign_in.dto';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +50,8 @@ export class AuthService {
      * @param signInData DTO Data transfer object sign in
      * @returns 
      */
-    async handleSignInAdmin(signInData: SignInDto) {
+    async handleSignInAdmin(signInData: signInAdmin) {
+        console.log(signInData)
         try {
             return {
                 status: 'succeed',
@@ -67,11 +70,11 @@ export class AuthService {
      * @param signUpData DTO Data transfer object sign up
      * @returns 
      */
-    async handleSignUpAdmin(signUpData: SignUpDto) {
+    async handleSignUpAdmin(signUpData: signUpAdmin) {
         try {
             return {
                 status: 'succeed',
-                status_code : 200,
+                status_code : 201,
                 message : 'congratulations, you have successfully sign up admin.',
                 response : '',
             }
