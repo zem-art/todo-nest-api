@@ -15,17 +15,17 @@ export class ZodPipe implements PipeTransform {
             const firstErrorPath = error.errors?.[0]?.path?.[0] || 'unknown_field';
             if (error instanceof ZodError) {
                 return throwHttpException(
-                    'faield',
-                    'Bad Request',
+                    'failed',
+                    'invalid input data',
                     400,
-                    { path: `Invalid field: ${firstErrorPath}`, message : `${firstErrorMessage}` }
+                    { path: `invalid fields: ${firstErrorPath}`, message : `${firstErrorMessage}` }
                 )
             }
             return throwHttpException(
-                'faield',
-                'Bad Request',
+                'failed',
+                'invalid input data',
                 400,
-                { message: `Validation Failed !!...` }
+                { message: `validation Failed !!...` }
             )
         }
     }

@@ -1,7 +1,7 @@
-import { IsString, IsEmail, IsNotEmpty, IsPhoneNumber, IsDateString, MinLength } from "class-validator";
+import { IsString, IsEmail, IsNotEmpty, MinLength } from "class-validator";
 
 export class SignUpDto {
-    @IsEmail()
+    @IsEmail({}, { message : 'email must be an email'})
     @IsNotEmpty()
     email: string;
 
@@ -10,22 +10,11 @@ export class SignUpDto {
     username: string;
 
     @IsString()
-    @MinLength(6)
+    @MinLength(8, { message: 'password must be longer than or equal to 8 characters' })
     password: string;
 
     @IsString()
-    @MinLength(6)
+    @MinLength(8, { message: 'confirm_password must be longer than or equal to 8 characters' })
     confirm_password: string;
-
-    @IsPhoneNumber(null)
-    no_phone: string;
-
-    @IsDateString()
-    @IsNotEmpty()
-    date_of_birth: string;
-
-    @IsString()
-    @IsNotEmpty()
-    address: string;
 }
 

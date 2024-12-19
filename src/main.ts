@@ -21,7 +21,7 @@ async function bootstrap() {
   const hostFastify = configServiceF.get<string>('appFastify.host');
   const portFastify = configServiceF.get<number>('appFastify.port');
 
-  appFastify.useGlobalPipes(new ValidationPipe())
+  // appFastify.useGlobalPipes(new ValidationPipe())
 
   await appFastify.listen(portFastify, hostFastify);
   console.log(`Fastify Server is running on http://${hostFastify}:${portFastify}`);

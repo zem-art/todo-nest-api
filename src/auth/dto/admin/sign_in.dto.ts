@@ -5,4 +5,4 @@ export const SignInSchemaAdmin = z.object({
     password : z.string().nonempty('password is required'),
 })
 
-export type signInAdmin = z.infer<typeof SignInSchemaAdmin>
+export type signInAdminZod = z.infer<typeof SignInSchemaAdmin>

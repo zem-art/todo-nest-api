@@ -16,4 +16,4 @@ export const SignUpAdminSchema = z.object({
     path: ["confirm_password"], // Lokasi error di confirm_password
 });
 
-export type signUpAdmin = z.infer<typeof SignUpAdminSchema>;
+export type signUpAdminZod = z.infer<typeof SignUpAdminSchema>;

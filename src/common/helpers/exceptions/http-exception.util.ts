@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export function throwHttpException(
-  title: string,
+  title: string, 
   message: string,
   status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
   response?: object
