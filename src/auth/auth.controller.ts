@@ -18,6 +18,7 @@ export class AuthController {
      */
     @Post('/user/sign_in')
     @HttpCode(200)
+    @UsePipes(ValidationPipe)
     async signInUser(@Body() signInData : SignInDto) {
        return this.authService.handleSignInUser(signInData)
     }

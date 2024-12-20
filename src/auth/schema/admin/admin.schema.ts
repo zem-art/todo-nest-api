@@ -20,6 +20,9 @@ export class Admin {
     @Prop()
     id_docs : string;
 
+    @Prop({ unique: true })
+    id_user: string;
+
     @Prop({ required: true, unique: true })
     username: string;
 
@@ -53,12 +56,12 @@ AdminSchema.pre('save', async function (next) {
      * otherwise it will hash the password again if you save the document again by making some changes in other columns if your document contains other columns.
      */
     try {
-  
+
       // Check if the password has been modified or is new
       if(!this.isModified('password')){
         return next();
       }
-      
+
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(this.password, salt)
       this.password = hashedPassword
