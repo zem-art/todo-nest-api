@@ -8,12 +8,15 @@ import { signInAdminZod } from './dto/admin/sign_in.dto';
 import { StringUtil } from 'src/common/utils/string.util';
 import { throwHttpException } from 'src/common/helpers/exceptions/http-exception.util';
 import { RandomStrUtil } from 'src/common/utils/random_str.utils';
+import { JwtService } from '@nestjs/jwt';
+import { JWTUtil } from 'src/common/utils/jwt.utils';
 
 @Injectable()
 export class AuthService {
     constructor(
        @InjectModel('admin') private readonly AdminModel: Model<any>,
        @InjectModel('user') private readonly UserModel: Model<any>,
+       private readonly jwtService: JwtService,
     ){}
     /**
      * 
@@ -31,13 +34,15 @@ export class AuthService {
             const isMatchPassword = await findUsers.isValidPassword(password)
             if(!isMatchPassword) return throwHttpException('failed', 'sorry the password is not the same or wrong.', HttpStatus.BAD_REQUEST)
             
+            const payload = { sub: findUsers.id_user, email: email };
+
             response = {
                 data : {
                     id_user: findUsers.id_user,
                     username: findUsers.username,
                     email: findUsers.email,
                 },
-                token : '',
+                token : new JWTUtil(this.jwtService).generateToken({...payload})
             }
 
             return {
@@ -104,13 +109,15 @@ export class AuthService {
             const isMatchPassword = await findAdmin.isValidPassword(password)
             if(!isMatchPassword) return throwHttpException('failed', 'sorry the password is not the same or wrong.', HttpStatus.BAD_REQUEST)
 
+            const payload = { sub: findAdmin.id_user, email: username };
+                
             response = {
                 data : {
                     id_user: findAdmin.id_user,
                     username: findAdmin.username,
                     email: findAdmin.email,
                 },
-                token : '',
+                token : new JWTUtil(this.jwtService).generateToken({...payload})
             }
 
             return {

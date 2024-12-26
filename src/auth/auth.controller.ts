@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Request, UseGuards, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/user/sign_in.dto';
 import { SignUpDto } from './dto/user/sign_up.dto';
@@ -6,6 +6,7 @@ import { signUpAdminZod, SignUpAdminSchema } from './dto/admin/sign_up.dto';
 import { signInAdminZod, SignInSchemaAdmin } from './dto/admin/sign_in.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
 import { ValidationPipe } from 'src/common/pipes/validator.pipe';
+import { JWTAuthGuards } from 'src/common/middlewares/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -54,5 +55,12 @@ export class AuthController {
     @Post('/admin/sign_up')
     async signUpAdminZod(@Body(new ZodPipe(SignUpAdminSchema)) signUpData : signUpAdminZod) {
         return await this.authService.handleSignUpAdmin(signUpData);
+    }
+
+
+    @Get('/profile')
+    @UseGuards(JWTAuthGuards)
+    async profileUser(@Request() req:any) {
+        return req.user;
     }
 }
