@@ -1,12 +1,15 @@
-import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TodoZod } from './dto/todo.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { throwHttpException } from 'src/common/helpers/exceptions/http-exception.util';
+import { DateUtil } from 'src/common/utils/date.util';
 
 @Injectable()
 export class TodoService {
     constructor(
         @InjectModel('todo') private readonly TodoModel: Model<any>,
+        @InjectModel('user') private readonly UserModel: Model<any>,
     ) {}
 
     async handleCreateTodo(todoData: TodoZod) {
@@ -36,13 +39,36 @@ export class TodoService {
         try {
             const { id_user } = todoDataParam;
 
-            // console.log(id_user);
+            const findUser = await this.UserModel.findOne({ id_user })
+            if(!findUser) return  throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)
+
+            const findTodo  = await this.TodoModel.find({ id_user, deleted_flag: false })
+
+            let arrayResp = []
+
+            for (let i = 0; i < findTodo.length; i++) {
+                const element = findTodo[i];
+                arrayResp.push({
+                    id_todo: element.id_todo,
+                    id_user: element.id_user,
+                    title: element.title,
+                    description: element.description,
+                    date: element.date,
+                    image: element.image,
+                    completed: element.element,
+                    created_at: DateUtil.formatISO8601ToReadableDate(element.created_at),
+                    updated_at: element.updated_at,
+                    date_now : DateUtil.getTodayFormattedDate()
+                })
+            }
 
             return {
                 status: 'succeed',
                 status_code : 200,
                 message : 'congratulations on successfully list todo exist.',
-                response: {},
+                response: {
+                    data : arrayResp
+                },
             }
         } catch (error) {
             if (error instanceof HttpException) throw error;

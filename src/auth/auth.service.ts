@@ -34,7 +34,7 @@ export class AuthService {
             const isMatchPassword = await findUsers.isValidPassword(password)
             if(!isMatchPassword) return throwHttpException('failed', 'sorry the password is not the same or wrong.', HttpStatus.BAD_REQUEST)
             
-            const payload = { sub: findUsers.id_user, email: email };
+            const payload = { sub: findUsers.id_user, payload: String(new Date().getTime()) };
 
             response = {
                 data : {
@@ -109,7 +109,7 @@ export class AuthService {
             const isMatchPassword = await findAdmin.isValidPassword(password)
             if(!isMatchPassword) return throwHttpException('failed', 'sorry the password is not the same or wrong.', HttpStatus.BAD_REQUEST)
 
-            const payload = { sub: findAdmin.id_user, email: username };
+            const payload = { sub: findAdmin.id_user, payload: String(new Date().getTime()) };
                 
             response = {
                 data : {
