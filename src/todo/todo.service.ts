@@ -15,13 +15,13 @@ export class TodoService {
     async handleCreateTodo(todoData: TodoZod) {
         try {
             const { title, description, date, image } = todoData;
+console.log(todoData)
+            // let newTodo = new this.TodoModel({
+            //     ...todoData,
+            //     id_user: "5595368"
+            // });
 
-            let newTodo = new this.TodoModel({
-                ...todoData,
-                id_user: "5595368"
-            });
-
-            await newTodo.save();
+            // await newTodo.save();
 
             return {
                 status: 'succeed',
@@ -50,15 +50,14 @@ export class TodoService {
                 const element = findTodo[i];
                 arrayResp.push({
                     id_todo: element.id_todo,
-                    id_user: element.id_user,
+                    // id_user: element.id_user,
                     title: element.title,
                     description: element.description,
-                    date: element.date,
-                    image: element.image,
+                    // date: element.date,
+                    // image: element.image,
                     completed: element.element,
-                    created_at: DateUtil.formatISO8601ToReadableDate(element.created_at),
-                    updated_at: element.updated_at,
-                    date_now : DateUtil.getTodayFormattedDate()
+                    created_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.created_at, 'DD/MM/YYYY')),
+                    updated_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.updated_at, 'DD/MM/YYYY')),
                 })
             }
 
