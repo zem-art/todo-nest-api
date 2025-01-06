@@ -8,4 +8,4 @@ export const TodoSchema = z.object({
     image: z.string(),
 })
 
-export type TodoZod = z.infer<typeof TodoSchema> & JwtPayload
+export type TodoZod = z.infer<typeof TodoSchema> & JwtPayload & { id_todo?: string }

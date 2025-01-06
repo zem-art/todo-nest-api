@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { TodoSchema, TodoZod } from './dto/todo.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
@@ -24,5 +24,16 @@ export class TodoController {
     @Get('/detail/:id_todo/exist')
     async detailTodoExist(@Param() params: any) {
         return this.todoService.handleDetailTodoExist(params)
+    }
+
+    @Put('/edit/:id_todo/exist')
+    async editTodoExist(@Param() params: any, @Body(new ZodPipe(TodoSchema)) todoData : TodoZod) {
+        const combinedData = { ...todoData, id_todo : params.id_todo }
+        return this.todoService.handleEditTodoExist(combinedData)
+    }
+
+    @Delete('/delete/:id_todo/temporary')
+    async deleteTemporaryTodo(@Param() params: any) {
+        return this.todoService.handleDeleteTodoTemporary(params)
     }
 }
