@@ -174,8 +174,6 @@ export class TodoService {
             const findTodo = await this.TodoModel.findOne({ id_todo })
             if(!findTodo) return throwHttpException('failed', 'sorry the todo uid was not found.', HttpStatus.NOT_FOUND)
 
-            if(findTodo.deleted_flag || findTodo.deleted_at) return throwHttpException('failed', 'todo data has been deleted temporarily.', HttpStatus.BAD_REQUEST)
-
             await this.TodoModel.findOneAndUpdate(
                 { id_todo },
                 {
