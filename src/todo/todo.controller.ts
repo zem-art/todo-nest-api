@@ -28,7 +28,7 @@ export class TodoController {
 
     @Put('/edit/:id_todo/exist')
     async editTodoExist(@Param() params: any, @Body(new ZodPipe(TodoSchema)) todoData : TodoZod) {
-        const combinedData = { ...todoData, id_todo : params.id_todo }
+        const combinedData = { ...todoData, id_todo : params.id_todo };
         return this.todoService.handleEditTodoExist(combinedData)
     }
 
