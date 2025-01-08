@@ -36,4 +36,9 @@ export class TodoController {
     async deleteTemporaryTodo(@Param() params: any) {
         return this.todoService.handleDeleteTodoTemporary(params)
     }
+
+    @Put('/recovery/:id_todo/temporary')
+    async recoveryTemporaryTodo(@Param() params: any) {
+        return this.todoService.handleRecoveryTodoTemporary(params)
+    }
 }

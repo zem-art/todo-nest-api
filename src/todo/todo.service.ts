@@ -154,21 +154,42 @@ export class TodoService {
                     }
                 }
             )
-            // const data = {
-            //     id_todo: findTodo.id_todo,
-            //     id_user: findTodo.id_user,
-            //     title: findTodo.title,
-            //     description: findTodo.description,
-            //     date: findTodo.date,
-            //     image: findTodo.image,
-            //     created_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(findTodo.created_at, 'DD/MM/YYYY')),
-            //     updated_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(findTodo.updated_at, 'DD/MM/YYYY')),
-            // }
 
             return {
                 status: 'succeed',
                 status_code : 200,
                 message : `successfully delete temporary todo data with uid : ${id_todo}`,
+                response: {},
+            }
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    async handleRecoveryTodoTemporary(todoDataParam:any) {
+        try {
+            const { id_todo } = todoDataParam;
+
+            const findTodo = await this.TodoModel.findOne({ id_todo })
+            if(!findTodo) return throwHttpException('failed', 'sorry the todo uid was not found.', HttpStatus.NOT_FOUND)
+
+            if(findTodo.deleted_flag || findTodo.deleted_at) return throwHttpException('failed', 'todo data has been deleted temporarily.', HttpStatus.BAD_REQUEST)
+
+            await this.TodoModel.findOneAndUpdate(
+                { id_todo },
+                {
+                    $set : {
+                        deleted_at: null,
+                        deleted_flag: false,
+                    }
+                }
+            )
+            
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : `successfully restore todo.`,
                 response: {},
             }
         } catch (error) {
