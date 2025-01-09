@@ -49,20 +49,22 @@ export class TodoService {
 
             const findTodo  = await this.TodoModel.find(filter).sort({ created_at: -1 })
 
-            for (let i = 0; i < findTodo.length; i++) {
-                const element = findTodo[i];
-                arrayResp.push({
-                    id_todo: element.id_todo,
-                    // id_user: element.id_user,
-                    title: element.title,
-                    description: element.description,
-                    // date: element.date,
-                    // image: element.image,
-                    completed: element.element,
-                    created_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.created_at, 'DD/MM/YYYY')),
-                    updated_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.updated_at, 'DD/MM/YYYY')),
-                    deleted_at : temporary ? DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.deleted_at, 'DD/MM/YYYY')) : ''
-                })
+            if(findTodo.length > 0){
+                for (let i = 0; i < findTodo.length; i++) {
+                    const element = findTodo[i];
+                    arrayResp.push({
+                        id_todo: element.id_todo,
+                        // id_user: element.id_user,
+                        title: element.title,
+                        description: element.description,
+                        // date: element.date,
+                        // image: element.image,
+                        completed: element.element,
+                        created_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.created_at, 'DD/MM/YYYY')),
+                        updated_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.updated_at, 'DD/MM/YYYY')),
+                        deleted_at : temporary ? DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.deleted_at, 'DD/MM/YYYY')) : ''
+                    })
+                }
             }
 
             return {
