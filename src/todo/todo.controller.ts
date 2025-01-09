@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { TodoSchema, TodoZod } from './dto/todo.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
@@ -17,8 +17,9 @@ export class TodoController {
     }
 
     @Get('/list/:id_user/exist')
-    async listTodoExist(@Param() params: any) {
-        return this.todoService.handleListTodoExist(params)
+    async listTodoExist(@Param() params: any, @Query() query: any) {
+        const combinedData = { ...params, ...query}
+        return this.todoService.handleListTodo(combinedData)
     }
 
     @Get('/detail/:id_todo/exist')

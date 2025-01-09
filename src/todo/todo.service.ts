@@ -35,16 +35,19 @@ export class TodoService {
         }
     }
 
-    async handleListTodoExist(todoDataParam: any) {
+    async handleListTodo(todoDataParam: any) {
         try {
-            const { id_user } = todoDataParam;
-
-            const findUser = await this.UserModel.findOne({ id_user })
-            if(!findUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)
-
-            const findTodo  = await this.TodoModel.find({ id_user, deleted_flag: false })
+            const { id_user, temporary=false } = todoDataParam;
 
             let arrayResp = []
+            const findUser = await this.UserModel.findOne({ id_user })
+            if(!findUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)
+            let filter = { id_user, deleted_flag: temporary }
+            if(temporary){
+                filter = { ...filter, deleted_flag: true }
+            }
+
+            const findTodo  = await this.TodoModel.find(filter).sort({ created_at: -1 })
 
             for (let i = 0; i < findTodo.length; i++) {
                 const element = findTodo[i];
@@ -58,13 +61,14 @@ export class TodoService {
                     completed: element.element,
                     created_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.created_at, 'DD/MM/YYYY')),
                     updated_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.updated_at, 'DD/MM/YYYY')),
+                    deleted_at : temporary ? DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.deleted_at, 'DD/MM/YYYY')) : ''
                 })
             }
 
             return {
                 status: 'succeed',
                 status_code : 200,
-                message : 'congratulations on successfully list todo exist.',
+                message : `congratulations on successfully list todo ${temporary ? 'temporary' : 'exist'}.`,
                 response: {
                     data : arrayResp
                 },
@@ -81,6 +85,7 @@ export class TodoService {
 
             const findTodo = await this.TodoModel.findOne({ id_todo })
             if(!findTodo) return throwHttpException('failed', 'sorry the todo uid was not found.', HttpStatus.NOT_FOUND)
+            if(findTodo.deleted_flag || findTodo.delete) return throwHttpException('failed', 'Sorry, the todo data has been deleted.', HttpStatus.FAILED_DEPENDENCY)
 
             const data = {
                 id_todo: findTodo.id_todo,
@@ -113,6 +118,7 @@ export class TodoService {
 
             const findTodo = await this.TodoModel.findOne({ id_todo })
             if(!findTodo) return throwHttpException('failed', 'sorry the todo uid was not found.', HttpStatus.NOT_FOUND)
+            if(findTodo.deleted_flag || findTodo.delete) return throwHttpException('failed', 'Sorry, the todo data has been deleted.', HttpStatus.FAILED_DEPENDENCY)
 
             await this.TodoModel.findOneAndUpdate(
                 { id_todo },
@@ -142,7 +148,6 @@ export class TodoService {
 
             const findTodo = await this.TodoModel.findOne({ id_todo })
             if(!findTodo) return throwHttpException('failed', 'sorry the todo uid was not found.', HttpStatus.NOT_FOUND)
-
             if(findTodo.deleted_flag || findTodo.deleted_at) return throwHttpException('failed', 'todo data has been deleted temporarily.', HttpStatus.BAD_REQUEST)
 
             await this.TodoModel.findOneAndUpdate(
