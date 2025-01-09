@@ -6,7 +6,7 @@ import { signUpAdminZod, SignUpAdminSchema } from './dto/admin/sign_up.dto';
 import { signInAdminZod, SignInSchemaAdmin } from './dto/admin/sign_in.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
 import { ValidationPipe } from 'src/common/pipes/validator.pipe';
-import { JWTAuthGuards } from 'src/common/middlewares/jwt.guard';
+import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 
 @Controller('auth')
 export class AuthController {

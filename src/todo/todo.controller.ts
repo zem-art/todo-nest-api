@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } f
 import { TodoService } from './todo.service';
 import { TodoSchema, TodoZod } from './dto/todo.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
-import { JWTAuthGuards } from 'src/common/middlewares/jwt.guard';
+import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 
 @Controller('todo')
