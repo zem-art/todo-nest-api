@@ -7,21 +7,33 @@ import { signInAdminZod, SignInSchemaAdmin } from './dto/admin/sign_in.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
 import { ValidationPipe } from 'src/common/pipes/validator.pipe';
 import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
+import { ConfigService } from '@nestjs/config';
+import { API_VERSION, VERSIONS } from 'src/common/constants/variable.constants';
+import { ApiVersionedRoute } from 'src/common/decorators/prefix.decorator';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    private readonly apiVersion: string ;
+
+    constructor(
+        private readonly authService: AuthService, 
+        private readonly configService: ConfigService
+    ) {
+        this.apiVersion = this.configService.get<string>('appFastify.version') || VERSIONS[0]
+    }
 
     /**
      * 
      * @param signInData DTO Data transfer object sign in class validator
      * @returns 
      */
-    @Post('/user/sign_in')
+    @ApiVersionedRoute(`/mobile/user/sign_in`)
+    @Post()
     @HttpCode(200)
     @UsePipes(ValidationPipe)
     async signInUser(@Body() signInData : SignInDto) {
-       return this.authService.handleSignInUser(signInData)
+       console.log(`${this.apiVersion}`)
+        return this.authService.handleSignInUser(signInData)
     }
 
     /**
@@ -29,7 +41,7 @@ export class AuthController {
      * @param signUpData DTO Data transfer object sign up class validator
      * @returns 
      */
-    @Post('/user/sign_up')
+    @Post('/mobile/user/sign_up')
     @UsePipes(ValidationPipe)
     async signUpUser(@Body() signUpData : SignUpDto) {
         return await this.authService.handleSignUpUser(signUpData);
