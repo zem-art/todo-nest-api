@@ -7,22 +7,14 @@ import { signInAdminZod, SignInSchemaAdmin } from './dto/admin/sign_in.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
 import { ValidationPipe } from 'src/common/pipes/validator.pipe';
 import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
-import { ConfigService } from '@nestjs/config';
-import { API_VERSION, VERSIONS } from 'src/common/constants/variable.constants';
 import { ApiVersionedRoute } from 'src/common/decorators/version.decorator';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { BearerToken } from 'src/common/decorators/token.decorator';
 
 @Controller('auth')
 export class AuthController {
-    private readonly apiVersion: string ;
 
-    constructor(
-        private readonly authService: AuthService, 
-        private readonly configService: ConfigService
-    ) {
-        this.apiVersion = this.configService.get<string>('appFastify.version') || VERSIONS[0]
-    }
+    constructor(private readonly authService: AuthService) {}
 
     /**
      * 

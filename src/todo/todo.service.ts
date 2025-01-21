@@ -90,9 +90,9 @@ export class TodoService {
 
     async handleDetailTodoExist(todoDataParam: TodoInterface) {
         try {
-            const { id_todo } = todoDataParam;
+            const { id_todo, id_user } = todoDataParam;
 
-            const findTodo = await this.TodoModel.findOne({ id_todo })
+            const findTodo = await this.TodoModel.findOne({ id_todo, id_user })
             if(!findTodo) return throwHttpException('failed', 'sorry the todo uid was not found.', HttpStatus.NOT_FOUND)
             if(findTodo.deleted_flag || findTodo.delete) return throwHttpException('failed', 'Sorry, the todo data has been deleted.', HttpStatus.FAILED_DEPENDENCY)
 
@@ -151,7 +151,7 @@ export class TodoService {
         }
     }
 
-    async handleDeleteTodoTemporary(todoDataParam:any) {
+    async handleDeleteTodoTemporary(todoDataParam:TodoInterface) {
         try {
             const { id_todo } = todoDataParam;
 
@@ -181,7 +181,7 @@ export class TodoService {
         }
     }
 
-    async handleRecoveryTodoTemporary(todoDataParam:any) {
+    async handleRecoveryTodoTemporary(todoDataParam:TodoInterface) {
         try {
             const { id_todo } = todoDataParam;
 

@@ -30,27 +30,31 @@ export class TodoController {
     @ApiVersionedRoute('/detail/:id_todo/exist')
     @Get()
     @UseGuards(JWTAuthGuards)
-    async detailTodoExist(@Param() params: TodoInterface, @Query() query: TodoInterface) {
-        const combinedData = { id_user: req.user.userId, ...query}
-        return this.todoService.handleDetailTodoExist(params)
+    async detailTodoExist(
+        @Param() params: TodoInterface,
+        @Query() query: TodoInterface,
+        @Request() req: { user : JwtPayload}
+    ) {
+        const combinedData = { id_todo: params.id_todo, ...query, id_user: req.user.userId }
+        return this.todoService.handleDetailTodoExist(combinedData)
     }
 
     @ApiVersionedRoute('/edit/:id_todo/exist')
     @Put()
-    async editTodoExist(@Param() params: any, @Body(new ZodPipe(TodoSchema)) todoData : TodoZod) {
+    async editTodoExist(@Param() params: TodoInterface, @Body(new ZodPipe(TodoSchema)) todoData : TodoZod) {
         const combinedData = { ...todoData, id_todo : params.id_todo };
         return this.todoService.handleEditTodoExist(combinedData)
     }
 
     @ApiVersionedRoute('/delete/:id_todo/temporary')
     @Delete()
-    async deleteTemporaryTodo(@Param() params: any) {
+    async deleteTemporaryTodo(@Param() params: TodoInterface) {
         return this.todoService.handleDeleteTodoTemporary(params)
     }
 
     @ApiVersionedRoute('/recovery/:id_todo/temporary')
     @Put()
-    async recoveryTemporaryTodo(@Param() params: any) {
+    async recoveryTemporaryTodo(@Param() params: TodoInterface) {
         return this.todoService.handleRecoveryTodoTemporary(params)
     }
 }
