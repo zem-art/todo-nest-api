@@ -10,6 +10,8 @@ import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { ConfigService } from '@nestjs/config';
 import { API_VERSION, VERSIONS } from 'src/common/constants/variable.constants';
 import { ApiVersionedRoute } from 'src/common/decorators/prefix.decorator';
+import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
+import { BearerToken } from 'src/common/decorators/token.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +34,6 @@ export class AuthController {
     @HttpCode(200)
     @UsePipes(ValidationPipe)
     async signInUser(@Body() signInData : SignInDto) {
-       console.log(`${this.apiVersion}`)
         return this.authService.handleSignInUser(signInData)
     }
 
@@ -41,10 +42,21 @@ export class AuthController {
      * @param signUpData DTO Data transfer object sign up class validator
      * @returns 
      */
-    @Post('/mobile/user/sign_up')
+    @ApiVersionedRoute('/mobile/user/sign_up')
+    @Post()
     @UsePipes(ValidationPipe)
     async signUpUser(@Body() signUpData : SignUpDto) {
         return await this.authService.handleSignUpUser(signUpData);
+    }
+
+
+    @ApiVersionedRoute('/mobile/user/profile')
+    @Get()
+    @HttpCode(200)
+    @UseGuards(JWTAuthGuards)
+    async profileUser(@Request() req:{ user: JwtPayload }, @BearerToken() token: string) {
+        const combinedData = { userId: req.user.userId, email: req.user.email, token: token }
+        return await this.authService.handleProfileUser(combinedData)
     }
 
     /**
@@ -52,27 +64,21 @@ export class AuthController {
      * @param signInData DTO Data transfer object sign in zod
      * @returns 
      */
-    @Post('/admin/sign_in')
+    @ApiVersionedRoute('/admin/sign_in')
+    @Post()
     @HttpCode(200)
     async signInAdminZod(@Body(new ZodPipe(SignInSchemaAdmin)) signInData : signInAdminZod) {
        return this.authService.handleSignInAdmin(signInData)
     }
-
 
     /**
      * 
      * @param signUpData DTO Data transfer object sign up zod
      * @returns 
      */
-    @Post('/admin/sign_up')
+    @ApiVersionedRoute('/admin/sign_up')
+    @Post()
     async signUpAdminZod(@Body(new ZodPipe(SignUpAdminSchema)) signUpData : signUpAdminZod) {
         return await this.authService.handleSignUpAdmin(signUpData);
-    }
-
-
-    @Get('/profile')
-    @UseGuards(JWTAuthGuards)
-    async profileUser(@Request() req:any) {
-        return req.user;
     }
 }

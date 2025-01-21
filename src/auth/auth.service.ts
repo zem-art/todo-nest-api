@@ -10,6 +10,7 @@ import { throwHttpException } from 'src/common/helpers/exceptions/http-exception
 import { RandomStrUtil } from 'src/common/utils/random_str.utils';
 import { JwtService } from '@nestjs/jwt';
 import { JWTUtil } from 'src/common/utils/jwt.utils';
+import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
     async handleSignInUser(signInData: SignInDto) {
         try {
             const { email, password } = signInData
-            let response = {}
+            let response:object = {}
 
             const findUsers = await this.UserModel.findOne({ email : email });
             if(!findUsers) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)   
@@ -86,6 +87,37 @@ export class AuthService {
                 status_code : 201,
                 message : 'congratulations, you have successfully sign up user.',
                 response : {},
+            }
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+
+    async handleProfileUser (params: JwtPayload & { token?:string })  {
+        let response:object = {}
+        const { userId, email, token } = params
+
+        const findUsers = await this.UserModel.findOne({ id_user : userId });
+        if(!findUsers) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)
+
+        response = {
+            data : {
+                id_user: findUsers.id_user,
+                username: findUsers.username,
+                email: findUsers.email,
+            },
+            token,
+        }
+        
+        try {
+            
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : 'the user is successfully identified through the token.',
+                response,
             }
         } catch (error) {
             if (error instanceof HttpException) throw error;
