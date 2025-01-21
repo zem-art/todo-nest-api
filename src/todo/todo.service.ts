@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwHttpException } from 'src/common/helpers/exceptions/http-exception.util';
 import { DateUtil } from 'src/common/utils/date.util';
+import { TodoInterface } from './interface/todo.interface';
 
 @Injectable()
 export class TodoService {
@@ -14,6 +15,7 @@ export class TodoService {
 
     async handleCreateTodo(todoData: TodoZod) {
         try {
+            let response:object = {}
             const { title, description, date, image, userId } = todoData;
 
             const newTodo = new this.TodoModel({
@@ -22,12 +24,13 @@ export class TodoService {
             });
 
             await newTodo.save();
+            response = todoData
 
             return {
                 status: 'succeed',
                 status_code : 200,
                 message : 'congratulations on successfully creating todo.',
-                response: {},
+                response,
             }
         } catch (error) {
             if (error instanceof HttpException) throw error;
@@ -35,9 +38,9 @@ export class TodoService {
         }
     }
 
-    async handleListTodo(todoDataParam: any) {
+    async handleListTodo(todoDataParam: TodoInterface) {
         try {
-            const { id_user, temporary=false } = todoDataParam;
+            const { id_user, temporary=false, page=1, limit=5 } = todoDataParam;
 
             let arrayResp = []
             const findUser = await this.UserModel.findOne({ id_user })
@@ -47,7 +50,11 @@ export class TodoService {
                 filter = { ...filter, deleted_flag: true }
             }
 
-            const findTodo  = await this.TodoModel.find(filter).sort({ created_at: -1 })
+            const findTodo  = await this.TodoModel
+                .find(filter)
+                .sort({ created_at: -1 })
+                .skip((page - 1) * limit)
+                .limit((limit))
 
             if(findTodo.length > 0){
                 for (let i = 0; i < findTodo.length; i++) {
@@ -81,7 +88,7 @@ export class TodoService {
         }
     }
 
-    async handleDetailTodoExist(todoDataParam: any) {
+    async handleDetailTodoExist(todoDataParam: TodoInterface) {
         try {
             const { id_todo } = todoDataParam;
 

@@ -9,6 +9,6 @@ export const BearerToken = createParamDecorator(
       throw new Error('Authorization header is missing or malformed');
     }
 
-    return authHeader.split(' ')[1]; // Mengambil token setelah "Bearer"
+    return authHeader.split(' ')[1]; //take token after "Bearer"
   },
 );

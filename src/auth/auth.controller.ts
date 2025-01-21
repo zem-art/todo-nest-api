@@ -9,7 +9,7 @@ import { ValidationPipe } from 'src/common/pipes/validator.pipe';
 import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { ConfigService } from '@nestjs/config';
 import { API_VERSION, VERSIONS } from 'src/common/constants/variable.constants';
-import { ApiVersionedRoute } from 'src/common/decorators/prefix.decorator';
+import { ApiVersionedRoute } from 'src/common/decorators/version.decorator';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { BearerToken } from 'src/common/decorators/token.decorator';
 

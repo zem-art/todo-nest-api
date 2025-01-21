@@ -10,8 +10,8 @@ export default () => ({
       env : process.env.NEST_APP_ENV_E,
     },
     appFastify: {
-      host: process.env.NEST_APP_URL_F || '127.0.1.1',
-      port : process.env.NEST_APP_PORT_F || 4000,
+      host: process.env.NEST_APP_URL_F || '127.0.1.2',
+      port : process.env.NEST_APP_PORT_F || 4001,
       prefix : process.env.NEST_APP_PREFIX_F,
       version : process.env.NEST_APP_VERSION_F || API_VERSION,
       env : process.env.NEST_APP_ENV_F,

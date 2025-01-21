@@ -94,10 +94,14 @@ export class AuthService {
         }
     }
 
-
-    async handleProfileUser (params: JwtPayload & { token?:string })  {
+    /**
+     * 
+     * @param paramsData DTO Data transfer object jwt and token
+     * @returns 
+     */
+    async handleProfileUser (paramsData: JwtPayload & { token?:string }) {
         let response:object = {}
-        const { userId, email, token } = params
+        const { userId, email, token } = paramsData
 
         const findUsers = await this.UserModel.findOne({ id_user : userId });
         if(!findUsers) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)

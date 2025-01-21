@@ -4,41 +4,52 @@ import { TodoSchema, TodoZod } from './dto/todo.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
 import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
+import { ApiVersionedRoute } from 'src/common/decorators/version.decorator';
+import { TodoInterface } from './interface/todo.interface';
 
 @Controller('todo')
 export class TodoController {
     constructor(private readonly todoService: TodoService) {}
 
-    @Post('/create')
+    @ApiVersionedRoute('/create')
+    @Post()
     @UseGuards(JWTAuthGuards)
     async createTodo(@Request() req:{ user: JwtPayload}, @Body(new ZodPipe(TodoSchema)) todoData: TodoZod) {
         const combinedData = { ...todoData, userId: req.user.userId, email: req.user.email };
         return this.todoService.handleCreateTodo(combinedData)
     }
 
-    @Get('/list/:id_user/exist')
-    async listTodoExist(@Param() params: any, @Query() query: any) {
-        const combinedData = { ...params, ...query}
+    @ApiVersionedRoute('/list')
+    @Get()
+    @UseGuards(JWTAuthGuards)
+    async listTodoExist(@Request() req:{ user: JwtPayload }, @Query() query: TodoInterface) {
+        const combinedData = { id_user: req.user.userId, ...query}
         return this.todoService.handleListTodo(combinedData)
     }
 
-    @Get('/detail/:id_todo/exist')
-    async detailTodoExist(@Param() params: any) {
+    @ApiVersionedRoute('/detail/:id_todo/exist')
+    @Get()
+    @UseGuards(JWTAuthGuards)
+    async detailTodoExist(@Param() params: TodoInterface, @Query() query: TodoInterface) {
+        const combinedData = { id_user: req.user.userId, ...query}
         return this.todoService.handleDetailTodoExist(params)
     }
 
-    @Put('/edit/:id_todo/exist')
+    @ApiVersionedRoute('/edit/:id_todo/exist')
+    @Put()
     async editTodoExist(@Param() params: any, @Body(new ZodPipe(TodoSchema)) todoData : TodoZod) {
         const combinedData = { ...todoData, id_todo : params.id_todo };
         return this.todoService.handleEditTodoExist(combinedData)
     }
 
-    @Delete('/delete/:id_todo/temporary')
+    @ApiVersionedRoute('/delete/:id_todo/temporary')
+    @Delete()
     async deleteTemporaryTodo(@Param() params: any) {
         return this.todoService.handleDeleteTodoTemporary(params)
     }
 
-    @Put('/recovery/:id_todo/temporary')
+    @ApiVersionedRoute('/recovery/:id_todo/temporary')
+    @Put()
     async recoveryTemporaryTodo(@Param() params: any) {
         return this.todoService.handleRecoveryTodoTemporary(params)
     }
