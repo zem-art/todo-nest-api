@@ -13,7 +13,10 @@ import { ConfigService, ConfigModule } from "@nestjs/config";
                 const dbPassword = configService.get<string>('database.pass');
                 const dbDirect = configService.get<string>('database.direct');
                 const dbAuth = configService.get<string>('database.auth');
-                const dbName = configService.get<string>('database.name');
+                let dbName = configService.get<string>('database.name');
+                const envFastify = configService.get<string>('appFastify.env');
+
+                if(envFastify) dbName = dbName + `-${envFastify}`
 
                 // Add query parameter for authentication
                 const authParams = new URLSearchParams({
