@@ -21,7 +21,9 @@ export class TodoService {
             const newTodo = new this.TodoModel({
                 ...todoData,
                 id_user: userId,
+                id_todo : `${new Date().getTime()}`
             });
+            console.log(newTodo)
 
             await newTodo.save();
             response = todoData

@@ -13,7 +13,7 @@ export class Todo {
     @Prop({ index: 1 })
     id_docs : string;
 
-    @Prop({ index: 1, default: `${new Date().getTime()}` })
+    @Prop({ index: 1, })
     id_todo : string;
 
     @Prop({ default: ''})
