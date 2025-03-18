@@ -68,6 +68,7 @@ export class TodoService {
                         description: element.description,
                         // date: element.date,
                         // image: element.image,
+                        status : element.status || '', 
                         completed: element.element,
                         created_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.created_at, 'DD/MM/YYYY')),
                         updated_at: DateUtil.convertDateToEnglishFormat(DateUtil.formatDateTime(element.updated_at, 'DD/MM/YYYY')),

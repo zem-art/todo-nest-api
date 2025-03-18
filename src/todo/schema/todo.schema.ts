@@ -39,6 +39,9 @@ export class Todo {
 
     @Prop({ type: Date, default: null, required: false })
     deleted_at: Date;
+
+    @Prop()
+    status: string;
 }
 
 export const TodoSchema = SchemaFactory.createForClass(Todo);
