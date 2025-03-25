@@ -134,8 +134,8 @@ Content-Type: application/json
 **Contoh Penggunaan `PATCH`**
 Hanya ingin mengupdate email tanpa mengubah field lain:
 ```http
-  PATCH /users/1
-  Content-Type: application/json
+PATCH /users/1
+Content-Type: application/json
 
 {
   "email": "alice.new@example.com"
