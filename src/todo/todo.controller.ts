@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { TodoSchema, TodoZod } from './dto/todo.dto';
 import { ZodPipe } from 'src/common/pipes/zod.pipe';
@@ -6,6 +6,22 @@ import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { ApiVersionedRoute } from 'src/common/decorators/version.decorator';
 import { TodoInterface } from './interface/todo.interface';
+
+/**
+ * PUT vs PATCH
+ *
+ * - PUT: Digunakan untuk mengganti seluruh resource dengan data baru.
+ *        Semua field harus dikirim, jika tidak, field yang tidak disertakan bisa terhapus.
+ *        Bersifat idempotent (mengirim request yang sama berkali-kali akan menghasilkan efek yang sama).
+ *
+ * - PATCH: Digunakan untuk memperbarui sebagian resource tanpa mengganti keseluruhan.
+ *          Hanya field yang ingin diubah yang perlu dikirim.
+ *          Tidak selalu idempotent (tergantung implementasi API).
+ *
+ * Gunakan:
+ * - PUT ketika ingin mengganti seluruh resource.
+ * - PATCH ketika hanya ingin mengupdate sebagian data tanpa mempengaruhi field lain.
+ */
 
 @Controller('todo')
 export class TodoController {
@@ -53,7 +69,7 @@ export class TodoController {
     }
 
     @ApiVersionedRoute('/recovery/:id_todo/temporary')
-    @Put()
+    @Patch()
     async recoveryTemporaryTodo(@Param() params: TodoInterface) {
         return this.todoService.handleRecoveryTodoTemporary(params)
     }

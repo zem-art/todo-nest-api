@@ -97,3 +97,46 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+# NOTES :
+
+# HTTP Methods: PUT vs PATCH
+
+## 📌 Perbedaan PUT dan PATCH
+
+Dalam RESTful API, `PUT` dan `PATCH` digunakan untuk memperbarui resource, tetapi ada perbedaan penting di antara keduanya:
+
+### 🔹 PUT (Replace Entire Resource)
+- Mengganti **seluruh** resource dengan data baru.
+- Semua field harus dikirim dalam request body.
+- Jika ada field yang tidak dikirim, bisa terhapus (tergantung implementasi API).
+- **Idempotent**: Mengirim request yang sama berkali-kali akan menghasilkan efek yang sama.
+
+**Contoh Penggunaan `PUT`**  
+Mengupdate profil user secara keseluruhan:  
+```http
+PUT /users/1
+Content-Type: application/json
+
+{
+  "name": "Alice",
+  "email": "alice.new@example.com",
+  "phone": "1234567890"
+}
+
+### 🔹 PATCH (Modify Partial Resource)
+ - Digunakan untuk memperbarui sebagian dari resource.
+ - Hanya field yang ingin diubah yang perlu dikirim.
+ - Tidak selalu idempotent, karena efeknya bisa berbeda tergantung pada perubahan yang dilakukan.
+
+** Contoh Penggunaan `PATCH` **
+Hanya ingin mengupdate email tanpa mengubah field lain:
+
+PATCH /users/1
+Content-Type: application/json
+
+{
+  "email": "alice.new@example.com"
+}
+📌 Efeknya: Hanya email yang diperbarui, sementara name dan phone tetap sama.
