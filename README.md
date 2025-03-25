@@ -124,19 +124,23 @@ Content-Type: application/json
   "email": "alice.new@example.com",
   "phone": "1234567890"
 }
+```
 
 ### 🔹 PATCH (Modify Partial Resource)
  - Digunakan untuk memperbarui sebagian dari resource.
  - Hanya field yang ingin diubah yang perlu dikirim.
  - Tidak selalu idempotent, karena efeknya bisa berbeda tergantung pada perubahan yang dilakukan.
 
-** Contoh Penggunaan `PATCH` **
+**Contoh Penggunaan `PATCH`**
 Hanya ingin mengupdate email tanpa mengubah field lain:
 
-PATCH /users/1
-Content-Type: application/json
+```
+  PATCH /users/1
+  Content-Type: application/json
 
 {
   "email": "alice.new@example.com"
 }
+```
+
 📌 Efeknya: Hanya email yang diperbarui, sementara name dan phone tetap sama.
