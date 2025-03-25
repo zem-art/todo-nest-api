@@ -143,3 +143,8 @@ Content-Type: application/json
 ```
 
 📌 Efeknya: Hanya email yang diperbarui, sementara name dan phone tetap sama.
+
+### 📍 Catatan ###
+- Jika API mengharuskan PUT tanpa body, itu menyimpang dari standar HTTP.
+- Jika ingin update tanpa mengirim body, lebih baik gunakan PATCH.
+- PUT cocok untuk mengganti seluruh resource, sementara PATCH digunakan untuk update sebagian data tanpa mempengaruhi field lain.
