@@ -1,3 +1,4 @@
+import * as bcrypt from "bcrypt";
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { RandomStrUtil } from 'src/common/utils/random_str.utils';
 import { JwtService } from '@nestjs/jwt';
 import { JWTUtil } from 'src/common/utils/jwt.utils';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
+import { forgotPasswordZod } from './dto/user/forgot_password.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +21,7 @@ export class AuthService {
        @InjectModel('user') private readonly UserModel: Model<any>,
        private readonly jwtService: JwtService,
     ){}
+
     /**
      * 
      * @param signInData DTO Data transfer object sign in
@@ -87,6 +90,72 @@ export class AuthService {
                 status_code : 201,
                 message : 'congratulations, you have successfully sign up user.',
                 response : {},
+            }
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    /**
+     * 
+     * @param forgotPassword DTO Data transfer object forgot password zod
+     * @param req Request object
+     * @returns 
+     */
+    async handleForgotPasswordUser(forgotPassword: forgotPasswordZod) {
+        try {
+            const { email, current_password, update_password } = forgotPassword
+            let response:object = {}
+
+            const existingUser = await this.UserModel.findOne({ email: email });
+            if(!existingUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND);
+            if(current_password !== existingUser.confirm_password) return throwHttpException('failed', 'sorry, password and password confirmation are not the same.', HttpStatus.BAD_REQUEST);
+            if(update_password === current_password) return throwHttpException('failed', 'sorry, password and password confirmation are not the same.', HttpStatus.BAD_REQUEST);
+
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(update_password, salt)
+
+            await this.UserModel.findOneAndUpdate(
+                { email: email },
+                {
+                    $set: {
+                        password: hashedPassword,
+                        confirm_password: update_password,
+                    }
+                },
+                { new: true }
+            )
+
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : `congratulations, you have successfully updated your password.`,
+                response: response
+            }
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    /**
+     * 
+     * @param email User email
+     * @returns 
+     */
+    async handleCheckExistUser(email: string) {
+        try {
+            let response:object = {}
+
+            const findUsers = await this.UserModel.findOne({ email : email });
+            if(!findUsers) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND)
+
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : 'the user is successfully identified through the email.',
+                response,
             }
         } catch (error) {
             if (error instanceof HttpException) throw error;
