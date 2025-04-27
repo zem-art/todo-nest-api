@@ -1,11 +1,23 @@
-import { registerAs } from "@nestjs/config";
+// import { registerAs } from "@nestjs/config";
 
-export default registerAs('database', () => ({
-    url : process.env.DATABASE_URL,
-    port : process.env.DATABASE_PORT,
-    user : process.env.DATABASE_USER,
-    pass : process.env.DATABASE_PASSWORD,
-    name : process.env.DATABASE_NAME || 'db-nest-js',
-    direct : process.env.DATABASE_DIRECT || false,
-    auth : process.env.DATABASE_AUTH,
-}))
+// export default registerAs('mongodb', () => ({
+//     url : process.env.MONGODB_URL,
+//     port : process.env.MONGODB_PORT,
+//     user : process.env.MONGODB_USER,
+//     pass : process.env.MONGODB_PASSWORD,
+//     name : process.env.MONGODB_NAME || 'db-nest-js',
+//     direct : process.env.MONGODB_DIRECT || false,
+//     auth : process.env.MONGODB_AUTH,
+// }))
+
+export default () => ({
+    mongodb: {
+        url : process.env.MONGODB_URL,
+        port : process.env.MONGODB_PORT,
+        user : process.env.MONGODB_USER,
+        pass : process.env.MONGODB_PASS,
+        name : process.env.MONGODB_NAME || 'db-nest-js',
+        direct : process.env.MONGODB_DIRECT || false,
+        auth : process.env.MONGODB_AUTH,
+    }
+})

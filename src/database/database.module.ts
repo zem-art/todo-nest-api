@@ -27,6 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           directConnection: dbDirect,
           authSource: dbAuth,
         }).toString();
+        // console.log('authParam ',dbUser, dbPassword, dbUrl, dbPort, dbName, authParams);
 
         const urlName = dbUser && dbPassword
           ? `mongodb://${dbUser}:${dbPassword}@${dbUrl}:${dbPort}/${dbName}?${authParams}`
