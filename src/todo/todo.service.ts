@@ -13,6 +13,11 @@ export class TodoService {
         @InjectModel('user') private readonly UserModel: Model<any>,
     ) {}
 
+    /**
+     * 
+     * @param todoData DTO Data transfer object todo zod
+     * @returns 
+     */
     async handleCreateTodo(todoData: TodoZod) {
         try {
             let response:object = {}
@@ -40,6 +45,11 @@ export class TodoService {
         }
     }
 
+    /**
+     * 
+     * @param todoDataParam DTO Data transfer object todo zod
+     * @returns 
+     */
     async handleListTodo(todoDataParam: TodoInterface) {
         try {
             const { id_user, temporary=false, page=1, limit=5 } = todoDataParam;
@@ -91,6 +101,11 @@ export class TodoService {
         }
     }
 
+    /**
+     * 
+     * @param todoDataParam DTO Data transfer object todo zod
+     * @returns 
+     */
     async handleDetailTodoExist(todoDataParam: TodoInterface) {
         try {
             const { id_todo, id_user } = todoDataParam;
@@ -124,6 +139,11 @@ export class TodoService {
         }
     }
 
+    /**
+     * 
+     * @param todoData DTO Data transfer object todo zod
+     * @returns 
+     */
     async handleEditTodoExist(todoData: TodoZod) {
         try {
             const { title, description, date, image, id_todo } = todoData;
@@ -154,6 +174,11 @@ export class TodoService {
         }
     }
 
+    /**
+     * 
+     * @param todoDataParam DTO Data transfer object todo zod
+     * @returns 
+     */
     async handleDeleteTodoTemporary(todoDataParam:TodoInterface) {
         try {
             const { id_todo } = todoDataParam;
@@ -184,6 +209,11 @@ export class TodoService {
         }
     }
 
+    /**
+     * 
+     * @param todoDataParam DTO Data transfer object todo zod
+     * @returns 
+     */
     async handleRecoveryTodoTemporary(todoDataParam:TodoInterface) {
         try {
             const { id_todo } = todoDataParam;

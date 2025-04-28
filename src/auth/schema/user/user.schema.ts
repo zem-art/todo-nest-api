@@ -53,6 +53,7 @@ UserSchema.pre('save', async function (next) {
   
       // Check if the password has been modified or is new
       if(!this.isModified('password')){
+        console.log('Password not modified, skipping hashing');
         return next();
       }
       

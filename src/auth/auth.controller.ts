@@ -10,6 +10,7 @@ import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { ApiVersionedRoute } from 'src/common/decorators/version.decorator';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { BearerToken } from 'src/common/decorators/token.decorator';
+import { forgotPasswordSchema, forgotPasswordZod } from './dto/user/forgot_password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -41,7 +42,38 @@ export class AuthController {
         return await this.authService.handleSignUpUser(signUpData);
     }
 
+    /**
+     * 
+     * @param forgotPasswordData DTO Data transfer object forgot password zod
+     * @param req Request object
+     * @returns 
+     */
+    @ApiVersionedRoute('/mobile/user/forgot_password')
+    @Post()
+    @HttpCode(200)
+    async forgotPassword(@Body(new ZodPipe(forgotPasswordSchema)) forgotPasswordData: forgotPasswordZod) {
+        return await this.authService.handleForgotPasswordUser(forgotPasswordData)
+    }
 
+    /**
+     * 
+     * @param email Email address to check
+     * @param req Request object
+     * @returns 
+     */
+    @ApiVersionedRoute('/mobile/user/verify_email')
+    @Post()
+    @HttpCode(200)
+    async checkExistEmail(@Body('email') email: string) {
+        return await this.authService.handleCheckExistUser(email)
+    }
+
+    /**
+     * 
+     * @param req Request object
+     * @param token Bearer token from request header
+     * @returns 
+     */
     @ApiVersionedRoute('/mobile/user/profile')
     @Get()
     @HttpCode(200)
