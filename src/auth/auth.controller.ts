@@ -61,6 +61,20 @@ export class AuthController {
      * @param req Request object
      * @returns 
      */
+    @ApiVersionedRoute('/mobile/user/forgot_password_email')
+    @Post()
+    @HttpCode(200)
+    @UsePipes(ValidationPipe)
+    async forgotPasswordEmail(@Body('email') email: string) {
+        return await this.authService.handleForgotPasswordEmail(email)
+    }
+
+    /**
+     * 
+     * @param email Email address to check
+     * @param req Request object
+     * @returns 
+     */
     @ApiVersionedRoute('/mobile/user/verify_email')
     @Post()
     @HttpCode(200)
