@@ -5,8 +5,13 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private configServiceF: ConfigService) {
-        let secret = configServiceF.get<string>('jwt.secret_dev');
+    constructor(private configService: ConfigService) {
+        let secret = configService.get<string>('jwt.secret_dev');
+        const envFastify = configService.get<string>('appFastify.env');
+
+        if (envFastify === "production" || envFastify === "prod") {
+            secret = configService.get<string>('jwt.secret_prod');
+        }
 
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
