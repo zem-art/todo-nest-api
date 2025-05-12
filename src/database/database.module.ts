@@ -84,8 +84,8 @@ import { RedisLoggerService } from './redis-logger.service';
 
   ],
   providers: [
-    SequelizeLoggerService, // Uncomment if you want to use SequelizeLoggerService
     MongooseLoggerService, // Uncomment if you want to use MongooseLoggerService
+    SequelizeLoggerService, // Uncomment if you want to use SequelizeLoggerService
     RedisLoggerService, // Uncomment if you want to use RedisLoggerService
   ],
 })
