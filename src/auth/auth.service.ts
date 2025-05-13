@@ -20,6 +20,7 @@ export class AuthService {
     constructor(
        @InjectModel('admin') private readonly AdminModel: Model<any>,
        @InjectModel('user') private readonly UserModel: Model<any>,
+       @InjectModel('otp') private readonly OtpModel: Model<any>,
        private readonly jwtService: JwtService,
        private readonly mailerService: MailsService,
     ){}
@@ -143,7 +144,22 @@ export class AuthService {
 
     async handleForgotPasswordEmail (email:string) {
         try {
-            await this.mailerService.sendEmailByEvent('password_reset', 't06496253@gmail.com', "testing");
+            // Membuat OTP dengan masa aktif 5 menit
+            // const otp = new this.OtpModel({
+            //     email: 'user@example.com',
+            //     otp_code: '123456',
+            //     type: 'reset_password',
+            //     expires_at: new Date(Date.now() + 1 * 60 * 1000) // 5 menit dari sekarang
+            // });
+            
+            // await otp.save();
+
+            // await this.mailerService.sendEmailByEvent('password_reset', 't06496253@gmail.com', {
+            //     name : "testing",
+            //     otp : "123456",
+            //     time_minute : 5,
+            //     company_team : "Boba"
+            // });
             
             let response = {}
 

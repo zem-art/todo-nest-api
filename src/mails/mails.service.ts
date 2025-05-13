@@ -9,12 +9,12 @@ const resend = new Resend(process.env.RESEND_API_KEY || api_key);
 
 @Injectable()
 export class MailsService {
-  async sendEmailByEvent(event:string, to:string, payload:string) {
+  async sendEmailByEvent(event:string, to:string, payload:object) {
     const config = this.getTemplateConfig(event);
     const html = await this.renderTemplate(config.templateName, payload);
 
     return resend.emails.send({
-      from: `Your App ${process.env.RESEND_API_FROM}`,
+      from: `From : <${process.env.RESEND_API_FROM}>`,
       to,
       subject: config.subject,
       html,
@@ -26,7 +26,7 @@ export class MailsService {
       case 'user_registered':
         return { subject: 'Welcome!', templateName: 'user_registered' };
       case 'password_reset':
-        return { subject: 'Reset Password', templateName: 'password_reset' };
+        return { subject: 'OTP Code to Change Password', templateName: 'password_reset' };
       case 'order_confirmed':
         return { subject: 'Order Confirmed', templateName: 'order_confirmed' };
       default:
