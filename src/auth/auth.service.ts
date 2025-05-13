@@ -13,16 +13,15 @@ import { JwtService } from '@nestjs/jwt';
 import { JWTUtil } from 'src/common/utils/jwt.utils';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { forgotPasswordZod } from './dto/user/forgot_password.dto';
-import { MailerService } from "@nestjs-modules/mailer";
-import { getResetPasswordHtml } from "src/common/emails/templates/reset-password";
+import { MailsService } from "src/mails/mails.service";
 
 @Injectable()
 export class AuthService {
     constructor(
        @InjectModel('admin') private readonly AdminModel: Model<any>,
        @InjectModel('user') private readonly UserModel: Model<any>,
-       private readonly mailerService: MailerService,
        private readonly jwtService: JwtService,
+       private readonly mailerService: MailsService,
     ){}
 
     /**
@@ -144,17 +143,7 @@ export class AuthService {
 
     async handleForgotPasswordEmail (email:string) {
         try {
-            const resetLink = `https://example.com/reset-password?email=${email}`; // Ganti dengan URL reset password yang sesuai
-
-            const html = getResetPasswordHtml(resetLink, 'MyApp');
-
-            await this.mailerService.sendMail({
-                to : 'testingunity55@gmail.com', // penerima email
-                subject: 'Reset Password',
-                // template: './reset-password', // kalau pakai template (opsional)
-                text: `Click this link to reset your password: ${resetLink}`, // plain text
-                html, // HTML content
-            });
+            await this.mailerService.sendEmailByEvent('password_reset', 't06496253@gmail.com', "testing");
             
             let response = {}
 
