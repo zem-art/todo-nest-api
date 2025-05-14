@@ -4,7 +4,7 @@ import Handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-const api_key = 're_CRo6wGt2_5wm1mZvLkk9Nf6JBM9ovBxai'
+const api_key = ''
 const resend = new Resend(process.env.RESEND_API_KEY || api_key);
 
 @Injectable()
