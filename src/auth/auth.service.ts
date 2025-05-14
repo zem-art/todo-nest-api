@@ -144,22 +144,31 @@ export class AuthService {
 
     async handleForgotPasswordEmail (email:string) {
         try {
-            // Membuat OTP dengan masa aktif 5 menit
-            // const otp = new this.OtpModel({
-            //     email: 'user@example.com',
-            //     otp_code: '123456',
-            //     type: 'reset_password',
-            //     expires_at: new Date(Date.now() + 1 * 60 * 1000) // 5 menit dari sekarang
-            // });
-            
-            // await otp.save();
 
-            // await this.mailerService.sendEmailByEvent('password_reset', 't06496253@gmail.com', {
-            //     name : "testing",
-            //     otp : "123456",
-            //     time_minute : 5,
-            //     company_team : "Boba"
-            // });
+            const existingUser = await this.UserModel.findOne({ email: email });
+            if(!existingUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND);
+
+            // console.log('existingUser', existingUser);
+
+            const GenerateOtp = RandomStrUtil.random_str_number(6)
+            const expiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 menit dari sekarang
+
+            // // Membuat OTP dengan masa aktif 5 menit
+            const otp = new this.OtpModel({
+                email: existingUser.email,
+                otp_code: GenerateOtp,
+                type: 'reset_password_user',
+                expires_at: expiresAt,
+            });
+
+            await otp.save();
+
+            await this.mailerService.sendEmailByEvent('password_reset', existingUser.email, {
+                name : existingUser.username,
+                otp : GenerateOtp,
+                time_minute : 5,
+                company_team : "Boba"
+            });
             
             let response = {}
 
