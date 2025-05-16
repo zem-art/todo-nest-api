@@ -14,6 +14,7 @@ import { JWTUtil } from 'src/common/utils/jwt.utils';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { forgotPasswordZod } from './dto/user/forgot_password.dto';
 import { MailsService } from "src/mails/mails.service";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,7 @@ export class AuthService {
        @InjectModel('otp') private readonly OtpModel: Model<any>,
        private readonly jwtService: JwtService,
        private readonly mailerService: MailsService,
+       private readonly configService: ConfigService,
     ){}
 
     /**
@@ -142,6 +144,12 @@ export class AuthService {
         }
     }
 
+    /**
+     * 
+     * @param email User email
+     * @param type Type of otp
+     * @returns 
+     */
     async handleForgotPasswordEmail (email:string) {
         try {
 
@@ -149,11 +157,11 @@ export class AuthService {
             if(!existingUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND);
 
             // console.log('existingUser', existingUser);
-
+            const time = this.configService.get<number>('resend.timeout');
             const GenerateOtp = RandomStrUtil.random_str_number(6)
-            const expiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 menit dari sekarang
+            const expiresAt = new Date(Date.now() + time * 60 * 1000) // for minutes
 
-            // // Membuat OTP dengan masa aktif 5 menit
+            // Membuat OTP dengan masa aktif 5 menit
             const otp = new this.OtpModel({
                 email: existingUser.email,
                 otp_code: GenerateOtp,
@@ -163,12 +171,19 @@ export class AuthService {
 
             await otp.save();
 
-            await this.mailerService.sendEmailByEvent('password_reset', existingUser.email, {
+            const payload = {
                 name : existingUser.username,
                 otp : GenerateOtp,
-                time_minute : 5,
+                time_minute : time,
                 company_team : "Boba"
-            });
+            }
+
+            await this.mailerService.sendEmailByEvent(
+                'password_reset',
+                existingUser.email,
+                "OTP Code Password",
+                payload
+            );
             
             let response = {}
 

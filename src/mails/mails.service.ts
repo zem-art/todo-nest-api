@@ -1,20 +1,25 @@
+import { env } from "../config/env"; // If you access process.env too early, for example before NestJS runs forRoot(), you can use dotenv manually.
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from "@nestjs/config";
 import { Resend } from 'resend';
 import Handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-const api_key = 're_CRo6wGt2_5wm1mZvLkk9Nf6JBM9ovBxai'
-const resend = new Resend(process.env.RESEND_API_KEY || api_key);
+const api_key = env.RESEND_API_KEY || ''
+const resend = new Resend(api_key);
 
 @Injectable()
 export class MailsService {
-  async sendEmailByEvent(event:string, to:string, payload:object) {
+  constructor(private readonly configService: ConfigService) {}
+
+  async sendEmailByEvent(event:string, to:string, subject:string, payload:object) {
+    const fromNameEmail = this.configService.get<string>('resend.from');
     const config = this.getTemplateConfig(event);
     const html = await this.renderTemplate(config.templateName, payload);
 
     return resend.emails.send({
-      from: `From : <${process.env.RESEND_API_FROM}>`,
+      from: `${subject} <${fromNameEmail}>`,
       to,
       subject: config.subject,
       html,
@@ -26,7 +31,7 @@ export class MailsService {
       case 'user_registered':
         return { subject: 'Welcome!', templateName: 'user_registered' };
       case 'password_reset':
-        return { subject: 'OTP Code to Change Password', templateName: 'password_reset' };
+        return { subject: 'OTP Code Change Password', templateName: 'password_reset' };
       case 'order_confirmed':
         return { subject: 'Order Confirmed', templateName: 'order_confirmed' };
       default:
