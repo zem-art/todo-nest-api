@@ -10,7 +10,7 @@ import { JWTAuthGuards } from 'src/common/middlewares/jwt/jwt.guard';
 import { ApiVersionedRoute } from 'src/common/decorators/version.decorator';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { BearerToken } from 'src/common/decorators/token.decorator';
-import { forgotPasswordSchema, forgotPasswordZod } from './dto/user/forgot_password.dto';
+import { forgotPasswordSchema, forgotPasswordZod, verifyCodeOtpSchema, verifyCodeOtpZod } from './dto/user/forgot_password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -67,6 +67,19 @@ export class AuthController {
     @UsePipes(ValidationPipe)
     async forgotPasswordEmail(@Body('email') email: string) {
         return await this.authService.handleForgotPasswordEmail(email)
+    }
+
+    /**
+     * 
+     * @param verifyCodeOtpData DTO Data transfer object verify code otp zod
+     * @param req Request object
+     * @returns 
+     */
+    @ApiVersionedRoute('/mobile/user/verify_code_otp')
+    @Post()
+    @HttpCode(200)
+    async verifyCodeOtp(@Body(new ZodPipe(verifyCodeOtpSchema)) verifyCodeOtpData: verifyCodeOtpZod) {
+        return await this.authService.handleVerifyCodeOtp(verifyCodeOtpData)
     }
 
     /**

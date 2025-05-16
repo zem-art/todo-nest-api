@@ -33,6 +33,9 @@ export class Otp {
 
     @Prop({ default: 0 }) // jumlah percobaan
     attempts: number;
+
+    @Prop({ default: null }) // verify_at
+    verify_at: Date;
 }
 
 export const OtpSchema = SchemaFactory.createForClass(Otp);
