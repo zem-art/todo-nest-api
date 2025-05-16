@@ -160,21 +160,21 @@ export class AuthService {
             // console.log('existingUser', existingUser);
             const time = this.configService.get<number>('resend.timeout');
             const GenerateOtp = RandomStrUtil.random_str_number(6)
-            const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // for minutes
+            const expiresAt = new Date(Date.now() + time * 60 * 1000) // for minutes
 
-            // const payload = {
-            //     name : existingUser.username,
-            //     otp : GenerateOtp,
-            //     time_minute : time,
-            //     company_team : "Boba"
-            // }
+            const payload = {
+                name : existingUser.username,
+                otp : GenerateOtp,
+                time_minute : time,
+                company_team : "Boba"
+            }
 
-            // await this.mailerService.sendEmailByEvent(
-            //     'password_reset',
-            //     existingUser.email,
-            //     "OTP Code Password",
-            //     payload
-            // );
+            await this.mailerService.sendEmailByEvent(
+                'password_reset',
+                existingUser.email,
+                "OTP Code Password",
+                payload
+            );
 
             // Membuat OTP dengan masa aktif 5 menit
             const otp = new this.OtpModel({
