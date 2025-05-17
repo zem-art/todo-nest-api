@@ -2,15 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
+import { resolveJwtSecret } from "src/common/helpers/jwt-config.util";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(private configService: ConfigService) {
-        let secret = configService.get<string>('jwt.secret_dev');
-        const envFastify = configService.get<string>('appFastify.env');
+        const secret = resolveJwtSecret(configService);
 
-        if (envFastify === "production" || envFastify === "prod") {
-            secret = configService.get<string>('jwt.secret_prod');
+        // Pastikan nilai secret ada
+        if (!secret) {
+            throw new Error('JWT secret is not defined in environment variables');
         }
 
         super({
