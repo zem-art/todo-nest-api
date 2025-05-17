@@ -18,6 +18,7 @@ import { resolveJwtSecret } from 'src/common/helpers/jwt-config.util';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const secret = resolveJwtSecret(configService);
+        // console.log('JWT secret Module:', secret); // Debugging line to check the secret value
 
         return {
           secret,

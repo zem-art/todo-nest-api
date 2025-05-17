@@ -44,7 +44,10 @@ export class AuthService {
             const isMatchPassword = await findUsers.isValidPassword(password)
             if(!isMatchPassword) return throwHttpException('failed', 'sorry the password is not the same or wrong.', HttpStatus.BAD_REQUEST)
             
-            const payload = { sub: findUsers.id_user, payload: String(new Date().getTime()) };
+            const payload = { 
+                sub: findUsers.id_user,
+                payload: new Date().getTime()
+            };
 
             response = {
                 data : {
