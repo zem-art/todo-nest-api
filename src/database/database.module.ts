@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { SequelizeModule } from '@nestjs/sequelize';
-// import { RedisModule } from '@nestjs-modules/ioredis'; // npm install @nestjs-modules/ioredis ioredis
+import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseLoggerService } from './mongoose-logger.service';
+import { SequelizeModule } from '@nestjs/sequelize'; // npm install @nestjs/sequelize sequelize pg pg-hstore
+import { SequelizeLoggerService } from './sequelize-logger.service';
+import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis'; // npm install @nestjs-modules/ioredis ioredis
+import { RedisLoggerService } from './redis-logger.service';
 
 @Module({
   imports: [
@@ -55,22 +58,35 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     //     database: configService.get<string>('postgres.name'),
     //     autoLoadModels: true,
     //     synchronize: true, // WARNING: true hanya untuk dev
+    //     logging: (msg) => {
+    //       if (!msg.includes('SELECT 1+1')) {
+    //         console.log('SQL:', msg);
+    //       }
+    //     } // Uncomment if you want to log SQL queries
+    //     // logging: false, // 👉 matikan log query seperti "SELECT 1+1 AS result"
     //   }),
     // }),
 
     // // Redis Connection
     // RedisModule.forRootAsync({
     //   imports: [ConfigModule],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     config: {
-    //       host: configService.get<string>('redis.host'),
-    //       port: parseInt(configService.get<string>('redis.port'), 10),
-    //       password: configService.get<string>('redis.pass'),
+    //   inject: [ConfigService],
+    //   useFactory: async (configService: ConfigService): Promise<RedisModuleOptions> => ({
+    //     type: 'single', // Jenis koneksi Redis ('single', 'cluster', 'sentinel')
+    //     url: configService.get<string>('redis.host') || 'localhost',
+    //     options: {
+    //       port: parseInt(configService.get<string>('redis.port'), 10) || 6379,
+    //       password: configService.get<string>('redis.pass') || undefined,
     //       db: parseInt(configService.get<string>('redis.db'), 10) || 0,
     //     },
     //   }),
-    //   inject: [ConfigService],
     // }),
+
+  ],
+  providers: [
+    MongooseLoggerService, // Uncomment if you want to use MongooseLoggerService
+    // SequelizeLoggerService, // Uncomment if you want to use SequelizeLoggerService
+    // RedisLoggerService, // Uncomment if you want to use RedisLoggerService
   ],
 })
 export class DatabaseModule {}

@@ -12,14 +12,20 @@ import { RandomStrUtil } from 'src/common/utils/random_str.utils';
 import { JwtService } from '@nestjs/jwt';
 import { JWTUtil } from 'src/common/utils/jwt.utils';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
-import { forgotPasswordZod } from './dto/user/forgot_password.dto';
+import { forgotPasswordZod, verifyCodeOtpZod } from './dto/user/forgot_password.dto';
+import { MailsService } from "src/mails/mails.service";
+import { ConfigService } from "@nestjs/config";
+import { verify } from "crypto";
 
 @Injectable()
 export class AuthService {
     constructor(
        @InjectModel('admin') private readonly AdminModel: Model<any>,
        @InjectModel('user') private readonly UserModel: Model<any>,
+       @InjectModel('otp') private readonly OtpModel: Model<any>,
        private readonly jwtService: JwtService,
+       private readonly mailerService: MailsService,
+       private readonly configService: ConfigService,
     ){}
 
     /**
@@ -131,6 +137,112 @@ export class AuthService {
                 status: 'succeed',
                 status_code : 200,
                 message : `congratulations, you have successfully updated your password.`,
+                response: response
+            }
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    /**
+     * 
+     * @param email User email
+     * @param type Type of otp
+     * @returns 
+     */
+    async handleForgotPasswordEmail (email:string) {
+        try {
+
+            const existingUser = await this.UserModel.findOne({ email: email });
+            if(!existingUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND);
+
+            // console.log('existingUser', existingUser);
+            const time = this.configService.get<number>('resend.timeout');
+            const GenerateOtp = RandomStrUtil.random_str_number(6)
+            const expiresAt = new Date(Date.now() + time * 60 * 1000) // for minutes
+
+            const payload = {
+                name : existingUser.username,
+                otp : GenerateOtp,
+                time_minute : time,
+                company_team : "Boba"
+            }
+
+            await this.mailerService.sendEmailByEvent(
+                'password_reset',
+                existingUser.email,
+                "OTP Code Password",
+                payload
+            );
+
+            // Membuat OTP dengan masa aktif 5 menit
+            const otp = new this.OtpModel({
+                email: existingUser.email,
+                otp_code: GenerateOtp,
+                type: 'reset_password_user',
+                expires_at: expiresAt,
+            });
+
+            await otp.save();
+            
+            let response:object = {}
+
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : `congratulations, you have successfully sent a reset password email.`,
+                response: response
+            }
+
+        } catch (error:any) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+
+    /**
+     * 
+     * @param verifyCode DTO Data transfer object verify code otp zod
+     * @param req Request object
+     * @returns 
+     */
+    async handleVerifyCodeOtp (verifyCode : verifyCodeOtpZod) {
+        try {
+            const { email, otp_code } = verifyCode
+
+            const existingUser = await this.UserModel.findOne({ email: email});
+            if(!existingUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND);
+            const findOtp = await this.OtpModel.findOne({ email: email, otp_code: otp_code });
+
+            if(!findOtp) return throwHttpException('failed', 'sorry otp code not found or recognize.', HttpStatus.NOT_FOUND);
+            if(findOtp.verified || findOtp.verify_at) return throwHttpException('failed', 'sorry otp code already verified.', HttpStatus.BAD_REQUEST);
+            
+            const expires_at = findOtp.expires_at;
+            const currentDate = new Date();
+            // Check if the OTP has expired
+            const timeRemaining = new Date(expires_at).getTime() - currentDate.getTime();
+            const newExpireAt = new Date(currentDate.getTime() + timeRemaining / 2);
+
+            await this.OtpModel.findOneAndUpdate(
+                { email: email, otp_code: otp_code },
+                {
+                    $set: {
+                        verified: true,
+                        verify_at: new Date(),
+                        expires_at: newExpireAt, // update the expiration time
+                    }
+                },
+                { new: true }
+            )
+
+            let response:object = {}
+
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : `congratulations, you have successfully verified the OTP.`,
                 response: response
             }
         } catch (error) {
