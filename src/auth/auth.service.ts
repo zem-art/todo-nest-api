@@ -168,7 +168,7 @@ export class AuthService {
             const payload = {
                 name : existingUser.username,
                 otp : GenerateOtp,
-                time_minute : time,
+                time_minutes : time,
                 company_team : "Boba"
             }
 
