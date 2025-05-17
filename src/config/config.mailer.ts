@@ -10,6 +10,6 @@ export default () => ({
     resend : {
         apiKey : process.env.RESEND_API_KEY,
         from : process.env.RESEND_API_FROM,
-        timeout : process.env.RESEND_TIMEZONE,
+        timeout : process.env.RESEND_API_TIMEZONE,
     }
 })
