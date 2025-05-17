@@ -8,6 +8,7 @@ import { resolveJwtSecret } from "src/common/helpers/jwt-config.util";
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(private configService: ConfigService) {
         const secret = resolveJwtSecret(configService);
+        // console.log('JWT secret Strategy:', secret); // Debugging line to check the secret value
 
         // Pastikan nilai secret ada
         if (!secret) {
