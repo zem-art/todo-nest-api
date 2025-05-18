@@ -55,18 +55,25 @@ export class AuthController {
         return await this.authService.handleForgotPasswordUser(forgotPasswordData)
     }
 
+    @ApiVersionedRoute('/mobile/user/reset_password')
+    @Post()
+    @HttpCode(200)
+    async resetPassword(@Body(new ZodPipe(forgotPasswordSchema)) forgotPasswordData: forgotPasswordZod) {
+        return await this.authService.handleResetPasswordUser(forgotPasswordData)
+    }
+
     /**
      * 
      * @param email Email address to check
      * @param req Request object
      * @returns 
      */
-    @ApiVersionedRoute('/mobile/user/forgot_password_email')
+    @ApiVersionedRoute('/mobile/user/send_otp_email')
     @Post()
     @HttpCode(200)
     @UsePipes(ValidationPipe)
     async forgotPasswordEmail(@Body('email') email: string) {
-        return await this.authService.handleForgotPasswordEmail(email)
+        return await this.authService.handleSendOtpEmail(email)
     }
 
     /**

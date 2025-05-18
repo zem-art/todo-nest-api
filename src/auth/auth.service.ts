@@ -150,11 +150,51 @@ export class AuthService {
 
     /**
      * 
+     * @param forgotPassword DTO Data transfer object forgot password zod
+     * @param req Request object
+     * @returns 
+     */
+    async handleResetPasswordUser(forgotPassword: forgotPasswordZod) {
+        try {
+            const { email, current_password, update_password } = forgotPassword
+            let response:object = {}
+
+            const existingUser = await this.UserModel.findOne({ email: email });
+            if(!existingUser) return throwHttpException('failed', 'sorry user not found or recognize.', HttpStatus.NOT_FOUND);
+
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(update_password, salt)
+
+            await this.UserModel.findOneAndUpdate(
+                { email: email },
+                {
+                    $set: {
+                        password: hashedPassword,
+                        confirm_password: update_password,
+                    }
+                },
+                { upsert: true }
+            )
+
+            return {
+                status: 'succeed',
+                status_code : 200,
+                message : `congratulations, you have successfully updated your password.`,
+                response: response
+            }
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    /**
+     * 
      * @param email User email
      * @param type Type of otp
      * @returns 
      */
-    async handleForgotPasswordEmail (email:string) {
+    async handleSendOtpEmail (email:string) {
         try {
 
             const existingUser = await this.UserModel.findOne({ email: email });
